@@ -52,7 +52,7 @@
     const createAlbumMapping = (files) => {
         const albums = {};
         files.forEach(file => {
-            if (file.type === 'image/png' || file.type === 'image/jpeg') {
+            if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/gif') {
                 const albumName = file.webkitRelativePath.split('/')[1];
                 if (!albums[albumName]) {
                     albums[albumName] = [];
@@ -88,8 +88,13 @@
 
     const createAlbum = async (albumName) => {
         (await getElement('button[aria-label="Create album"]')).click();
-        const textArea = await getElement('c-wiz[style=""] textarea[aria-label="Edit album name"]');
-        textArea.value = albumName;
+        let albumNameSet = false;
+        // for some reason album name was not getting set, hopefully this fixes it
+        while (!albumNameSet) {
+            const textArea = await getElement('c-wiz[style=""] textarea[aria-label="Edit album name"]');
+            textArea.value = albumName;
+            albumNameSet = (await getElement('c-wiz[style=""] textarea[aria-label="Edit album name"]')).value === albumName;
+        }
     }
 
     const uploadFolderFiles = async (files) => {
